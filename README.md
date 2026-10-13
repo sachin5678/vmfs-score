@@ -48,6 +48,10 @@ npm run data       # recompute scores -> src/data/scores.json
 npm run build
 ```
 
+## Deploy
+
+The repo is set up for Vercel zero-config (see `vercel.json`: Vite, `npm run build`, output `dist`, Node 24). Import `sachin5678/vmfs-score` in the Vercel dashboard and every push to `main` redeploys. GitHub Pages works too — `base: './'` in `vite.config.js` already makes `dist/` portable.
+
 ## Layout
 
 ```
