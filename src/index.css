@@ -1,0 +1,86 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+ * Tokens. Light values are Polymarket's grounded tokens (bg #FFFFFF / soft #F5F5F5,
+ * ink #000000 / #666666, 1px hairlines). Dark values are Neon's grounded tokens
+ * (bg #000000, soft fill #262828, ink #FFFFFF / #94979E / #797D86, line
+ * rgba(255,255,255,.1)). Chromatic colour is not chrome: every hue in this file
+ * belongs to the valuation heat ramp, because in this product colour is data.
+ */
+@theme {
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --color-page: #f5f5f5;
+  --color-panel: #ffffff;
+  --color-raise: #efefef;
+  --color-ink: #000000;
+  --color-ink-soft: #666666;
+  --color-muted: #6e6e6e;
+  --color-line: rgba(0, 0, 0, 0.1);
+  --color-line-strong: rgba(0, 0, 0, 0.24);
+
+  --ease-terminal: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.dark {
+  --color-page: #000000;
+  --color-panel: #0e1010;
+  --color-raise: #262828;
+  --color-ink: #ffffff;
+  --color-ink-soft: #94979e;
+  --color-muted: #797d86;
+  --color-line: rgba(255, 255, 255, 0.1);
+  --color-line-strong: rgba(255, 255, 255, 0.28);
+}
+
+@layer base {
+  *,
+  ::before,
+  ::after {
+    border-color: var(--color-line);
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 4.5rem;
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+    }
+  }
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+@utility headline {
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
