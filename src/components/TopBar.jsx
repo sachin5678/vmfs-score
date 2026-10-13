@@ -24,7 +24,7 @@ export default function TopBar({ theme, onToggleTheme }) {
             <a
               key={item.href}
               href={item.href}
-              className="transition-colors duration-150 hover:text-ink"
+              className="-my-1.5 py-1.5 transition-colors duration-150 hover:text-ink"
             >
               {item.label}
             </a>
