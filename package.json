@@ -3,6 +3,9 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
   "description": "Monthly valuation score for six NSE indices: P/E, P/B, dividend yield and trailing returns combined into one attractive-vs-overvalued number.",
   "scripts": {
     "dev": "vite",
