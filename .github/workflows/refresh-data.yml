@@ -10,6 +10,8 @@ on:
   schedule:
     - cron: '30 14 * * 1-5'
   workflow_dispatch:
+  push:
+    branches: [main]
 
 permissions:
   contents: write
@@ -21,6 +23,7 @@ concurrency:
 jobs:
   refresh:
     runs-on: ubuntu-latest
+    if: github.actor != 'github-actions[bot]'
     steps:
       - uses: actions/checkout@v4
 
