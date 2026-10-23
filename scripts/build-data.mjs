@@ -54,15 +54,20 @@ const percentile = (sorted, value) => {
   return sorted.length === 1 ? 0.5 : lo / (sorted.length - 1)
 }
 
+/* Math.pow can differ in the last bit between platforms (Node on Windows vs the
+   Linux runner), which would rewrite scores.json on every machine switch. Six
+   decimals is finer than the source data and keeps the file byte-stable. */
+const round6 = (v) => (v == null ? null : Number(v.toFixed(6)))
+
 const trailing = (rows, i, months) =>
   i - months < 0 || rows[i].close == null || rows[i - months].close == null
     ? null
-    : (Math.pow(rows[i].close / rows[i - months].close, 12 / months) - 1) * 100
+    : round6((Math.pow(rows[i].close / rows[i - months].close, 12 / months) - 1) * 100)
 
 const forward = (rows, i, months) =>
   i + months >= rows.length || rows[i].close == null || rows[i + months].close == null
     ? null
-    : (Math.pow(rows[i + months].close / rows[i].close, 12 / months) - 1) * 100
+    : round6((Math.pow(rows[i + months].close / rows[i].close, 12 / months) - 1) * 100)
 
 function buildIndex(meta, source) {
   const all = source.rows
