@@ -5,7 +5,7 @@ import ScoreHistory from './components/ScoreHistory.jsx'
 import Evidence from './components/Evidence.jsx'
 import MonthlyTable from './components/MonthlyTable.jsx'
 import Method from './components/Method.jsx'
-import { COL } from './lib/data.js'
+import { COL, shortDate } from './lib/data.js'
 
 function Status({ error, onReload }) {
   return (
@@ -131,10 +131,12 @@ export default function App() {
       <footer className="border-t border-line">
         <div className="mx-auto flex max-w-[1280px] flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-6 text-[12.5px] text-muted sm:px-6">
           <span>
-            Data: NSE indices (niftyindices.com), month-end. Rules from the VMFS valuation score
-            video. Not investment advice.
+            Data: NSE indices (niftyindices.com), month-end closes with the running month to
+            date. Rules from the VMFS valuation score video. Not investment advice.
           </span>
-          <span className="tnum">{data ? `Dataset generated ${data.generated}` : ''}</span>
+          <span className="tnum">
+            {data ? `As of ${shortDate(data.asOf) ?? data.generated} · rebuilt ${data.generated}` : ''}
+          </span>
         </div>
       </footer>
     </div>

@@ -24,6 +24,11 @@ export const isNum = (v) => typeof v === 'number' && Number.isFinite(v)
 
 export const monthLabel = (m) => `${MONTHS[+m.slice(5, 7) - 1]} ${m.slice(0, 4)}`
 export const monthLong = (m) => `${MONTHS_LONG[+m.slice(5, 7) - 1]} ${m.slice(0, 4)}`
+
+/** "2026-10-22" -> "22 Oct 2026" */
+export const shortDate = (iso) =>
+  iso ? `${+iso.slice(8, 10)} ${MONTHS[+iso.slice(5, 7) - 1]} ${iso.slice(0, 4)}` : null
+
 export const yearOf = (m) => +m.slice(0, 4)
 
 export function num(v, digits = 2) {

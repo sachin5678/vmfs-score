@@ -100,13 +100,26 @@ function buildIndex(meta, source) {
     row.heat = parts.every((v) => v != null) ? parts.reduce((a, b) => a + b, 0) / 4 : null
   }
 
-  return { ...meta, window, cols }
+  return {
+    ...meta,
+    window,
+    cols,
+    dates: new Map(all.map((r) => [r.m, r.date])),
+  }
 }
 
 const raw = JSON.parse(
   fs.readFileSync(path.join(ROOT, 'data', 'score_raw_data.json'), 'utf8'),
 )
 const built = INDICES.map((meta) => buildIndex(meta, raw[meta.key]))
+
+/* The freshest observation across every index. The month it falls in is still
+   running, so that month's score is provisional. */
+const asOf = Object.values(raw)
+  .flatMap((idx) => idx.rows.map((r) => r.date))
+  .filter(Boolean)
+  .sort()
+  .at(-1)
 
 /* Calibration on Nifty 50 anchors (see scripts comment above). */
 const nifty = built[0].window
@@ -141,6 +154,7 @@ for (const idx of built) {
     })
   rows[idx.key] = scored
   const last = scored.at(-1)
+  const lastDate = last ? idx.dates.get(last[0]) : null
   indices.push({
     key: idx.key,
     label: idx.label,
@@ -150,7 +164,8 @@ for (const idx of built) {
     latest: last
       ? { month: last[0], close: last[1], pe: last[2], pb: last[3], dy: last[4],
           r1: last[5], r3: last[6], r5: last[7], r10: last[8],
-          score: last[9], zone: last[10] }
+          score: last[9], zone: last[10],
+          date: lastDate, partial: last[0] === asOf.slice(0, 7) }
       : null,
     best: scored.length ? Math.min(...scored.map((r) => r[9])) : null,
     worst: scored.length ? Math.max(...scored.map((r) => r[9])) : null,
@@ -160,6 +175,7 @@ for (const idx of built) {
 
 const payload = {
   generated: new Date().toISOString().slice(0, 10),
+  asOf,
   source: 'NSE Indices (niftyindices.com) daily P/E, P/B, dividend yield and daily close',
   calibration: {
     p: Number(p.toFixed(3)),

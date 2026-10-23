@@ -1,4 +1,4 @@
-import { cheaperThan, monthLabel, monthLong, num, pct, signedPct } from '../lib/data.js'
+import { cheaperThan, monthLabel, monthLong, num, pct, shortDate, signedPct } from '../lib/data.js'
 
 function Ladder({ data, activeKey, onSelect, yMax }) {
   const sorted = [...data.indices]
@@ -13,7 +13,7 @@ function Ladder({ data, activeKey, onSelect, yMax }) {
       <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
         <h2 className="headline text-[19px]">Six indices on one scale</h2>
         <p className="text-[12.5px] text-muted">
-          sorted rich to cheap · month end {sorted[0] ? monthLabel(sorted[0].latest.month) : ''}
+          sorted rich to cheap · as of {shortDate(data.asOf) ?? monthLabel(sorted[0]?.latest.month ?? '')}
         </p>
       </div>
 
@@ -133,6 +133,9 @@ export default function Focal({ data, activeKey, onSelect, yMax }) {
         <div className="border-b border-line px-4 py-8 sm:px-6 lg:col-span-5 lg:border-r lg:border-b-0">
           <p className="text-[13px] text-muted">
             {active.label} · {active.family} · {monthLong(latest.month)}
+            {latest.partial && latest.date && (
+              <span className="text-ink-soft"> · month to date, {shortDate(latest.date)}</span>
+            )}
           </p>
 
           <div className="mt-4 flex flex-wrap items-end gap-x-5 gap-y-3">
@@ -159,6 +162,13 @@ export default function Focal({ data, activeKey, onSelect, yMax }) {
             </span>{' '}
             of the {active.months} months scored since {monthLabel(active.since)} for this index.
           </p>
+
+          {latest.partial && latest.date && (
+            <p className="mt-1.5 text-[12px] text-muted">
+              {monthLong(latest.month)} is still running, so this reading is provisional — it
+              uses NSE data through {shortDate(latest.date)}.
+            </p>
+          )}
 
           <dl className="mt-6 grid grid-cols-2 gap-x-5 gap-y-3 border-t border-line pt-4 sm:grid-cols-4">
             {valuation.map(([label, value]) => (

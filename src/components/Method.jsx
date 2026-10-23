@@ -10,7 +10,7 @@ function scoreAt(rows, month) {
 }
 
 const STEPS = [
-  'Take the official month-end P/E, P/B and dividend yield for the index, plus the month-end close.',
+  'Take the official daily P/E, P/B and dividend yield for the index plus the daily close, and keep the last trading day of each month.',
   'Turn each input into a percentile against that same index’s own scored history: high P/E reads expensive, high P/B reads expensive, low dividend yield reads expensive.',
   'Average the three valuation percentiles with the average of the available trailing 1/3/5/10-year return percentiles, so the four pillars carry equal weight.',
   'Map that heat number to the score with score = A + B × heat^p, where p, A and B are fixed by three reference points from the video.',
@@ -115,6 +115,10 @@ export default function Method({ data }) {
           horizons only exist for older months, so recent months sit out of those columns.
         </li>
         <li>The score is a percentile read of this index against itself, not a price target.</li>
+        <li>
+          The running month is marked provisional: its score uses the latest trading day, not a
+          month-end, so it moves with the market until the month closes.
+        </li>
       </ul>
 
       <h3 className="headline mt-7 text-[17px]">Sources and refresh</h3>
@@ -127,15 +131,15 @@ export default function Method({ data }) {
         <a href={VIDEO} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
           this video
         </a>
-        . Dataset generated {data.generated}.
+        . Data as of {data.asOf ?? data.generated}; dataset rebuilt {data.generated}.
       </p>
       <pre className="mt-3 overflow-x-auto rounded-[8px] border border-line bg-panel px-4 py-3 text-[12.5px] text-ink-soft">
-{`npm run fetch    # re-download raw NSE monthly data
+{`npm run fetch    # download the last few months of NSE data (--full to rebuild)
 npm run data     # recompute scores -> src/data/scores.json
 npm run build    # production bundle in dist/`}
       </pre>
       <p className="mt-3 text-[13px] text-muted">
-        Source code:{' '}
+        A GitHub Action refreshes this every weekday. Source code:{' '}
         <a href={REPO} target="_blank" rel="noreferrer" className="underline underline-offset-2 hover:text-ink">
           github.com/sachin5678/vmfs-score
         </a>
