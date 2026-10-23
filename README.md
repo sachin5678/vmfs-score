@@ -12,7 +12,7 @@ Nifty 50 · Nifty Next 50 · Nifty Midcap 100 · Nifty Midcap 150 · Nifty Small
 
 ## How the score is built
 
-1. Take the official month-end P/E, P/B, dividend yield and closing price for the index.
+1. Take the official daily P/E, P/B, dividend yield and closing price for the index, and keep the last trading day of each month.
 2. Turn each input into a percentile against that same index's own scored history — high P/E expensive, high P/B expensive, low dividend yield expensive.
 3. Average the three valuation percentiles with the average of the available trailing-return percentiles, so the four pillars carry equal weight.
 4. Map that heat number onto the score with `score = A + B × heat^p`.
@@ -40,13 +40,25 @@ npm run build      # production bundle in dist/
 npm run preview    # serve the built bundle
 ```
 
-Refresh the data (NSE publishes new monthly P/E, P/B, dividend yield and closes):
+Refresh the data (NSE publishes new daily P/E, P/B, dividend yield and closes):
 
 ```bash
-npm run fetch      # re-download raw monthly data -> data/score_raw_data.json
+npm run fetch      # last few months -> data/score_raw_data.json (--full rebuilds since 1990)
 npm run data       # recompute scores -> src/data/scores.json
 npm run build
 ```
+
+`npm run fetch` reads two public endpoints behind the Historical Data page on
+niftyindices.com. It sends dates as `dd-Mon-yyyy` and uses each index's *trading*
+name (`NIFTY SMLCAP 100`, not `NIFTY SMALLCAP 100`) — both matter, and both are
+why the endpoint returns a 500 rather than an error message when they are wrong.
+
+### Keeping it current
+
+`.github/workflows/refresh-data.yml` runs `fetch → data → build` every weekday at
+14:30 UTC (20:00 IST), then commits and pushes only if the numbers changed. Vercel
+redeploys from that push. The running month is always provisional: it uses the
+latest trading day, not a month-end, and the UI labels it that way.
 
 ## Deploy
 

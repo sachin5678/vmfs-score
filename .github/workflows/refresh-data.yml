@@ -1,5 +1,11 @@
 name: Refresh NSE data
 
+# Pulls the latest NSE P/E, P/B, dividend yield and close for the six indices,
+# rebuilds the scores and pushes the result. Vercel deploys on the push.
+#
+# 14:30 UTC = 20:00 IST, comfortably after the 15:30 IST close and NSE's
+# end-of-day file update. Weekdays only; a holiday simply produces no diff.
+
 on:
   schedule:
     - cron: '30 14 * * 1-5'
@@ -17,14 +23,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
+
       - run: npm ci
-      - run: npm run fetch
-      - run: npm run data
-      - run: npm run build
+
+      - name: Fetch latest NSE data
+        run: npm run fetch
+
+      - name: Rebuild scores
+        run: npm run data
+
+      - name: Verify the bundle still builds
+        run: npm run build
+
       - name: Commit and push when the data moved
         run: |
           set -euo pipefail
